@@ -55,6 +55,16 @@ struct UserProfileView: View {
                 }
             }
 
+            // Appearance
+            Section("Appearance") {
+                Picker("Theme", selection: $appState.colorSchemePreference) {
+                    Text("System").tag("system")
+                    Text("Light").tag("light")
+                    Text("Dark").tag("dark")
+                }
+                .pickerStyle(.segmented)
+            }
+
             // Log out
             Section {
                 Button("Log Out", role: .destructive) {
