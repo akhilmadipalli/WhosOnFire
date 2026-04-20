@@ -43,6 +43,8 @@ def load_player_stats(season):
         "receiving_epa": "mean",
         })
     player_stats = player_stats.reset_index()
+    player_stats['player_id'] = player_stats['player_id'].astype(str)
+
                            
     print(f"Season agg: {len(player_stats)}")
     unique_players = player_stats["player_id"].nunique()

@@ -11,6 +11,8 @@ import Combine
 class AppState: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var currentUser: User? = nil
+    
+    @Published var positionAverages: [String: PlayerSeasonStatDTO] = [:]
 
     func signIn(user: User) {
         currentUser = user

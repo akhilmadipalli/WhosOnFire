@@ -1,175 +1,187 @@
-////
-////  CompareView.swift
-////  WhosOnFire
-////
-////  Created by Akhil Madipalli on 2/25/26.
-////
-//import SwiftUI
+import SwiftData
 //
+//  CompareView.swift
+//  WhosOnFire
 //
-///**
-// StatCompareRow: View
-// 
-// Compares between two values, the higher value is highlighted.
-// 
-// 
-// */
-//struct StatCompareRow: View {
-//    let label: String
-//    let valueA: String
-//    let valueB: String
-//    let higherIsBetter: Bool
-//    let rawA: Double
-//    let rawB: Double
+//  Created by Akhil Madipalli on 2/25/26.
 //
-//    var body: some View {
-//        HStack {
-//            Text(valueA)
-//                .frame(maxWidth: .infinity)
-//                .bold(higherIsBetter ? rawA >= rawB : rawA <= rawB)
-//                .foregroundStyle(higherIsBetter ? (rawA >= rawB ? .primary : .secondary) : (rawA <= rawB ? .primary : .secondary))
-//            Text(label)
-//                .font(.caption)
-//                .foregroundStyle(.secondary)
-//                .frame(width: 80)
-//            Text(valueB)
-//                .frame(maxWidth: .infinity)
-//                .bold(higherIsBetter ? rawB >= rawA : rawB <= rawA)
-//                .foregroundStyle(higherIsBetter ? (rawB >= rawA ? .primary : .secondary) : (rawB <= rawA ? .primary : .secondary))
-//        }
-//        .padding(.vertical, 4)
-//    }
-//}
-//
-//struct CompareView: View {
-//    @State private var playerA: Player? = nil
-//    @State private var playerB: Player? = nil
-//
-//    var body: some View {
-//        ScrollView {
-//            VStack(spacing: 24) {
-//                // Player selectors
-//                HStack(spacing: 16) {
-//                    PlayerPicker(label: "Player 1", selected: $playerA)
-//                    PlayerPicker(label: "Player 2", selected: $playerB)
-//                }
-//                .padding(.horizontal)
-//
-//                // Comparison rows
-//                if let a = playerA, let b = playerB {
-//                    VStack(spacing: 0) {
-//                        // Column headers
-//                        HStack {
-//                            Text(a.name.components(separatedBy: " ").last ?? a.name)
-//                                .font(.caption).bold()
-//                                .frame(maxWidth: .infinity)
-//                            Text("STAT")
-//                                .font(.caption2)
-//                                .foregroundStyle(.secondary)
-//                                .frame(width: 80)
-//                            Text(b.name.components(separatedBy: " ").last ?? b.name)
-//                                .font(.caption).bold()
-//                                .frame(maxWidth: .infinity)
-//                        }
-//                        .padding(.horizontal)
-//                        .padding(.bottom, 8)
-//
-//                        Divider()
-//
-//                        Group {
-//                            StatCompareRow(label: "Pass Yds",
-//                                          valueA: "\(Int(a.passingYards))", valueB: "\(Int(b.passingYards))",
-//                                          higherIsBetter: true, rawA: a.passingYards, rawB: b.passingYards)
-//                            Divider()
-//                            
-//                            StatCompareRow(label: "Pass TDs",
-//                                          valueA: "\(a.passingTds)", valueB: "\(b.passingTds)",
-//                                          higherIsBetter: true, rawA: Double(a.passingTds), rawB: Double(b.passingTds))
-//                            Divider()
-//                            
-//                            StatCompareRow(label: "Fantasy Pts",
-//                                          valueA: String(format: "%.1f", a.fantasyPointsPpr),
-//                                          valueB: String(format: "%.1f", b.fantasyPointsPpr),
-//                                          higherIsBetter: true, rawA: a.fantasyPointsPpr, rawB: b.fantasyPointsPpr)
-//                            Divider()
-//                            
-//                            StatCompareRow(label: "Pass EPA",
-//                                          valueA: String(format: "+%.2f", a.passingEpa),
-//                                          valueB: String(format: "+%.2f", b.passingEpa),
-//                                          higherIsBetter: true, rawA: a.passingEpa, rawB: b.passingEpa)
-//                            Divider()
-//                            
-//                            StatCompareRow(label: "Rush Yds",
-//                                          valueA: "\(Int(a.rushingYards))", valueB: "\(Int(b.rushingYards))",
-//                                          higherIsBetter: true, rawA: a.rushingYards, rawB: b.rushingYards)
-//                        }
-//                        .padding(.horizontal)
-//                    }
-//                    .background(Color.gray.opacity(0.05))
-//                    .cornerRadius(12)
-//                    .padding(.horizontal)
-//                } else {
-//                    Text("Select two players to compare")
-//                        .foregroundStyle(.secondary)
-//                        .padding(.top, 40)
-//                }
-//            }
-//            .padding(.top)
-//        }
-//        .navigationTitle("Compare")
-//    }
-//}
-//
-//
-///**
-// Let's you select from a list of all current players.
-// 
-// */
-//struct PlayerPicker: View {
-//    let label: String
-//    @Binding var selected: Player?
-//
-//    var body: some View {
-//        Menu {
-//            ForEach(MockData.samplePlayers) { player in
-//                Button(player.name) {
-//                    selected = player
-//                }
-//            }
-//            if selected != nil {
-//                Divider()
-//                Button("Clear", role: .destructive) { selected = nil }
-//            }
-//        } label: {
-//            VStack(spacing: 6) {
-//                if let player = selected {
-//                    Text("🔥")
-//                        .font(.title2)
-//                    Text(player.name)
-//                        .font(.caption).bold()
-//                        .multilineTextAlignment(.center)
-//                    Text(player.team)
-//                        .font(.caption2)
-//                        .foregroundStyle(.secondary)
-//                } else {
-//                    Image(systemName: "plus.circle")
-//                        .font(.title2)
-//                        .foregroundStyle(.blue)
-//                    Text(label)
-//                        .font(.caption)
-//                        .foregroundStyle(.blue)
-//                }
-//            }
-//            .frame(maxWidth: .infinity)
-//            .padding()
-//            .background(Color.gray.opacity(0.1))
-//            .cornerRadius(12)
-//        }
-//    }
-//}
-//
-//#Preview {
-//    NavigationStack {
-//        CompareView()
-//    }
-//}
+import SwiftUI
+
+struct CompareView: View {
+    @State private var playerA: Player? = nil
+    @State private var playerB: Player? = nil
+    @Query(sort: \Player.player_display_name) var allPlayers: [Player]
+    @Query var stats: [PlayerSeasonStat]
+    @State private var selectedSeason: String = "All"
+    @State var playerAStats: PlayerSeasonStatDTO?
+    @State var playerBStats: PlayerSeasonStatDTO?
+    @EnvironmentObject var appState: AppState
+    
+    @State var averageStat: PlayerSeasonStatDTO?
+
+
+    func updatePlayerStats(playerA: Player, playerB: Player) {
+        self.playerAStats =
+            StatEngine.aggregate(
+                playerID: playerA.id,
+                stats: stats,
+                season: selectedSeason
+            )
+        self.playerBStats =
+            StatEngine.aggregate(
+                playerID: playerB.id,
+                stats: stats,
+                season: selectedSeason
+            )
+        print(
+            "Stats loaded for \(playerA.player_display_name) and \(playerB.player_display_name)"
+        )
+        self.averageStat = appState.positionAverages[   "\(playerA.position)_\(selectedSeason)"]
+        print("Baseline calculated for \(playerA.position)_\(selectedSeason)")
+        
+    }
+    
+
+    var body: some View {
+        ScrollView {
+            Picker("Season", selection: $selectedSeason) {
+                Text("All").tag("All")
+
+                ForEach(Array(Set(stats.map { $0.season })).sorted(), id: \.self) { year in
+                    Text(String(year)).tag(String(year))
+                }
+            }.padding()
+            VStack(spacing: 24) {
+                // Player selectors
+                HStack(spacing: 16) {
+                    PlayerPicker(
+                        label: "Player 1",
+                        selected: $playerA,
+                        players: allPlayers,
+                        positionFilter: nil
+                        
+                    )
+                    PlayerPicker(
+                        label: "Player 2",
+                        selected: $playerB,
+                        players: allPlayers,
+                        positionFilter: playerA?.position
+                    )
+                }
+                .padding(.horizontal)
+                
+                // Comparison rows
+                if playerA != nil && playerB != nil {
+                    Text("Two players here")
+                    
+                    ComparisonModule(statA: playerAStats, statB: playerBStats, playerA: playerA!,
+                                     baseline: averageStat)
+                    .padding(.horizontal)
+                    
+                } else {
+                    Text("Select two players to compare")
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 40)
+                }
+            }
+            .padding(.top)
+            .onChange(of: playerA) {
+                if let a = playerA, let b = playerB {
+                    updatePlayerStats(playerA: a, playerB: b)
+                }
+            }
+            .onChange(of: playerB) {
+                if let a = playerA, let b = playerB {
+                    updatePlayerStats(playerA: a, playerB: b)
+                }
+            }
+            .onChange(of: selectedSeason) {
+                if let a = playerA, let b = playerB {
+                    updatePlayerStats(playerA: a, playerB: b)
+                }
+            }
+        }
+        .navigationTitle("Compare")
+    }
+}
+
+/// Let's you select from a list of all current players.
+struct PlayerPicker: View {
+    let label: String
+    @Binding var selected: Player?
+    let players: [Player]
+    var positionFilter: String? = nil
+
+    @State private var isShowingSheet = false
+    @State private var searchText = ""
+
+    // Search box
+    var filteredPlayers: [Player] {
+        var list = players
+        if (positionFilter != nil) {
+            list = list.filter {$0.position == positionFilter! }
+        }
+        if searchText.isEmpty { return list }
+        return list.filter {
+            $0.player_display_name.localizedCaseInsensitiveContains(searchText)
+        }
+    }
+
+    var body: some View {
+        Button {
+            isShowingSheet = true
+        } label: {
+            VStack(spacing: 6) {
+                if let player = selected {
+                    AsyncImage(url: URL(string: player.headshot_url)) {
+                        image in image.image?.resizable().scaledToFill()
+                    }.frame(width: 80, height: 80).clipShape(Circle())
+                    Text(player.player_display_name).font(.caption).bold()
+                    Text(player.team).font(.caption2).foregroundStyle(
+                        .secondary
+                    )
+                } else {
+                    Image(systemName: "plus.circle").font(.title2)
+                        .foregroundStyle(.blue)
+                    Text(label).font(.caption).foregroundStyle(.blue)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
+        }
+        .sheet(isPresented: $isShowingSheet) {
+            NavigationStack {
+                List(filteredPlayers) { player in
+                    Button(player.player_display_name) {
+                        selected = player
+                        isShowingSheet = false
+                    }
+                    .foregroundStyle(.primary)
+                }
+                .navigationTitle("Select Player")
+                .searchable(text: $searchText, prompt: "Search by name...")
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Cancel") { isShowingSheet = false }
+                    }
+                    if selected != nil {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Clear", role: .destructive) {
+                                selected = nil
+                                isShowingSheet = false
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        CompareView()
+    }
+}

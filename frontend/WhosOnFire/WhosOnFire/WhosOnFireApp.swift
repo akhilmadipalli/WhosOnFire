@@ -12,7 +12,6 @@ import SwiftData
 
 @main
 struct WhosOnFireApp: App {
-    
     @StateObject private var appState = AppState()
     
     // Setup SwiftData
@@ -35,19 +34,12 @@ struct WhosOnFireApp: App {
         FirebaseApp.configure()
         print("Configured firebase settings")
     }
-
+    
     var body: some Scene {
         WindowGroup {
             RootView()
-                .environmentObject(appState).modelContainer(sharedModelContainer)
-                .task { // task is an async object
-                    let modelContext = sharedModelContainer.mainContext
-                    let seasons = [2023, 2024, 2025]
-                    print("Calling api")
-                    var api = API()
-                    await api.fetchPlayers(modelContext: modelContext) // Load players
-                    //await api.fetchPlayerStats(seasons: seasons, modelContext: modelContext)
-                }
+                .environmentObject(appState)
+                .modelContainer(sharedModelContainer)
         }
     }
 }

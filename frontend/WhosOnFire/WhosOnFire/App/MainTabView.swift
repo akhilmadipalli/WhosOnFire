@@ -16,12 +16,12 @@ struct MainTabView: View {
             .tabItem {
                 Label("Search", systemImage: "magnifyingglass")
             }
-//            NavigationStack {
-//                CompareView()
-//            }
-//            .tabItem {
-//                Label("Compare", systemImage: "person.2")
-//            }
+            NavigationStack {
+                CompareView()
+            }
+            .tabItem {
+                Label("Compare", systemImage: "person.2")
+            }
 
             NavigationStack {
                 UserProfileView()

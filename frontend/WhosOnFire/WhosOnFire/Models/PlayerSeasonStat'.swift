@@ -56,7 +56,7 @@ class PlayerSeasonStat: Identifiable {
     // Standard Init
     init(player_id: String, season: Int, passing_yards: Double, passing_tds: Int, passing_interceptions: Int, rushing_yards: Double, rushing_tds: Int, receiving_yards: Double, receiving_tds: Int, def_sacks: Double, def_interceptions: Int, def_fumbles_forced: Int, fantasy_points_ppr: Double, passing_epa: Double, rushing_epa: Double, receiving_epa: Double) {
         
-        self.id = "\(player_id)_\(season)"
+                self.id = "\(player_id)_\(season)"
                 self.player_id = player_id
                 self.season = season
                 self.passing_yards = passing_yards
@@ -75,4 +75,25 @@ class PlayerSeasonStat: Identifiable {
                 self.receiving_epa = receiving_epa
     }
 }
-    
+ 
+import Accelerate
+extension PlayerSeasonStatDTO {
+    func toVector(baseline: PlayerSeasonStatDTO?, position: String?) -> [Double] {
+        guard let base = baseline else { return [] }
+        let baselines: [Double]
+        let values: [Double]
+        if position == "QB" {
+            values = [passing_yards, Double(passing_tds), Double(passing_interceptions), rushing_yards, passing_epa]
+            baselines = [base.passing_yards, Double(base.passing_tds), Double(base.passing_interceptions), base.rushing_yards, base.passing_epa]
+        } else if ["WR", "RB", "TE", "FB"].contains(position) {
+            values = [rushing_yards, receiving_yards, Double(rushing_tds + receiving_tds), receiving_epa, fantasy_points_ppr]
+            baselines = [base.rushing_yards, base.receiving_yards, Double(base.rushing_tds + base.receiving_tds), base.receiving_epa, base.fantasy_points_ppr]
+            
+        } else {
+            values = [def_sacks, Double(def_interceptions), Double(def_fumbles_forced), fantasy_points_ppr]
+            baselines = [base.def_sacks, Double(base.def_interceptions), Double(base.def_fumbles_forced), base.fantasy_points_ppr]
+        }
+        let safeBaselines = baselines.map { $0 == 0 ? 1.0 : $0 }
+        return vDSP.divide(values, safeBaselines)
+    }
+}
