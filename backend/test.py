@@ -10,6 +10,8 @@ pd.set_option('display.max_columns', None)
 def load_player_stats(season):
     player_stats = nfl.load_player_stats(season)
     player_stats = player_stats.to_pandas()
+    for stat in list(player_stats.columns):
+        print(stat)
 
     columns = ['player_id','player_display_name',
            'position','headshot_url','season','week','team',
