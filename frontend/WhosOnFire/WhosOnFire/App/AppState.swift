@@ -14,6 +14,9 @@ class AppState: ObservableObject {
 
     @Published var positionAverages: [String: PlayerSeasonStatDTO] = [:]
     @Published var positionStds: [String: PlayerSeasonStatDTO] = [:]
+    
+    @Published var isLoading: Bool = false
+    @Published var loadingStatus: String = ""
 
     @AppStorage("colorSchemePreference") var colorSchemePreference: String = "system"
 

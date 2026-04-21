@@ -5,9 +5,10 @@
 //  Created by Akhil Madipalli on 2/25/26.
 //
 
+import DDSpiderChart
+import Foundation
 import SwiftData
 import SwiftUI
-import DDSpiderChart
 
 struct PlayerProfileView: View {
     let player: Player
@@ -18,17 +19,21 @@ struct PlayerProfileView: View {
     @EnvironmentObject var appState: AppState
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
-    
+
     var filteredStat: PlayerSeasonStatDTO? {
-        StatEngine.aggregate(playerID: player.id, stats: stats, season: selectedSeason)
+        StatEngine.aggregate(
+            playerID: player.id,
+            stats: stats,
+            season: selectedSeason
+        )
     }
     var averageStat: PlayerSeasonStatDTO? {
-        appState.positionAverages[                "\(player.position)_\(selectedSeason)"]
+        appState.positionAverages["\(player.position)_\(selectedSeason)"]
     }
     var standardDevStat: PlayerSeasonStatDTO? {
-        appState.positionStds[                "\(player.position)_\(selectedSeason)"]
+        appState.positionStds["\(player.position)_\(selectedSeason)"]
     }
-    
+
     init(player: Player) {
         self.player = player
         let targetId = player.id
@@ -50,13 +55,14 @@ struct PlayerProfileView: View {
                 Picker("Season", selection: $selectedSeason) {
                     Text("All").tag("All")
 
-                    ForEach(Array(Set(stats.map { $0.season })).sorted(), id: \.self) { year in
+                    ForEach(
+                        Array(Set(stats.map { $0.season })).sorted(),
+                        id: \.self
+                    ) { year in
                         Text(String(year)).tag(String(year))
                     }
                 }.padding()
                 VStack(spacing: 8) {
-
-                    // Container
                     AsyncImage(url: URL(string: player.headshot_url)) {
                         image in image.image?.resizable().scaledToFill()
                     }.frame(width: 80, height: 80).clipShape(Circle())
@@ -71,17 +77,41 @@ struct PlayerProfileView: View {
                 .padding(.top)
 
                 // Stats grid
-                ComparisonModule(statA: filteredStat, statB: averageStat, playerA: player, baseline: averageStat, std: standardDevStat)
+                HStack {
+                    Text(player.player_display_name)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.primary)
+                    Spacer()
+                    Text("\(player.position) Avg (\(selectedSeason))")
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
+                }
+                ComparisonModule(
+                    statA: filteredStat,
+                    statB: averageStat,
+                    playerA: player,
+                    baseline: averageStat,
+                    standardDev: standardDevStat,
+                    status: "Profile"
+                )
                 .padding(.horizontal)
             }
         }
         .navigationTitle(player.player_display_name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    player.isFavorite.toggle()
+                    try? modelContext.save()
+                } label: {
+                    Image(systemName: player.isFavorite ? "star.fill" : "star")
+                        .foregroundStyle(player.isFavorite ? .yellow : .gray)
+                }
+            }
+        }
     }
 }
-
-
-
 
 #Preview {
     NavigationStack {
@@ -89,12 +119,8 @@ struct PlayerProfileView: View {
     }
 }
 
-import Foundation
-
 extension Double {
     func to2dp() -> String {
         String(format: "%.2f", self)
     }
 }
-
-

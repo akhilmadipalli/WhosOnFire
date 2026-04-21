@@ -41,6 +41,12 @@ struct WhosOnFireApp: App {
                 .environmentObject(appState)
                 .modelContainer(sharedModelContainer)
                 .preferredColorScheme(appState.preferredColorScheme)
+                .overlay(alignment: .topTrailing) {
+                    if(appState.isLoading) {
+                        StatusOverlay(status: appState.loadingStatus)
+                    }
+                    
+                }
         }
     }
 }

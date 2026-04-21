@@ -40,11 +40,7 @@ struct UserProfileView: View {
                 .padding(.vertical, 4)
             }
 
-            // Favorite players
-            Section("Favorite Players") {
-                Text("No favorites yet")
-                    .foregroundStyle(.secondary)
-            }
+            
 
             // Settings
             Section("Settings") {

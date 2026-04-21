@@ -21,6 +21,14 @@ struct PlayerRowView: View {
                 
                 Text(player.player_display_name)
                     .font(.headline)
+                HStack(spacing: 10) {
+                    Button {
+                        player.isFavorite.toggle()
+                        try? modelContext.save()
+                    }
+                    label: { Image(systemName: player.isFavorite ? "star.fill" : "star").foregroundStyle(player.isFavorite ? .yellow : .gray)
+                    }
+                }
             }
             Text("\(player.team) • \(player.position)")
                 .font(.subheadline)

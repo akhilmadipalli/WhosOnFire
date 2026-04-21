@@ -11,6 +11,10 @@ import SwiftData
 struct RootView: View {
     @EnvironmentObject var appState: AppState
     @Environment(\.modelContext) private var modelContext // Use the environment context
+    
+    @State private var loadingStatus: String? = ""
+    @State private var isLoading: Bool = false
+    
 
     var body: some View {
         Group {
@@ -22,18 +26,23 @@ struct RootView: View {
         }
         .task {
             let container = modelContext.container
+            await MainActor.run {
+                appState.isLoading = true
+                appState.loadingStatus = "Loading players..."
+            }
+            
             Task.detached(priority: .high) {
                 let backgroundContext = ModelContext(container)
                 let seasons = [2021, 2022, 2023, 2024, 2025]
                 let positions = ["QB", "RB", "WR", "TE", "FB", "DE", "DT", "CB", "S", "LB", "DB", "DL"]
                 
-                print("Calling api from RootView...")
+                
                 var api = API()
                 await api.fetchPlayers(modelContext: backgroundContext)
                 await api.fetchPlayerStats(seasons: seasons, modelContext: backgroundContext)
                 try backgroundContext.save()
                 
-                print("Calculating position averages and standard devs...")
+                await MainActor.run { appState.loadingStatus = "Calculating Analytics..." }
                 
                 let allPlayers = (try? backgroundContext.fetch(FetchDescriptor<Player>())) ?? []
                 let allStats = (try? backgroundContext.fetch(FetchDescriptor<PlayerSeasonStat>())) ?? []
@@ -62,7 +71,14 @@ struct RootView: View {
                 await MainActor.run {
                     appState.positionAverages = posMeans
                     appState.positionStds = posStds
+                    appState.loadingStatus = "Loaded Players"
                     print("UI Updated with \(posMeans.count) averages and \(posStds.count) stds.")
+                }
+                try await Task.sleep(nanoseconds: 500_000_000)
+                await MainActor.run {
+                    withAnimation(.spring()) {
+                        appState.isLoading.toggle()
+                    }
                 }
             }
         }

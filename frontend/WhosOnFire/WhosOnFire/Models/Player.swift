@@ -18,15 +18,17 @@ final class Player: Identifiable {
     var position: String
     var headshot_url: String
     var team: String
+    var isFavorite: Bool = false
     
     // Standard Init
-    init(playerId: String, player_display_name: String, position: String, headshot_url: String, team: String) {
-        
+    init(playerId: String, player_display_name: String, position: String, headshot_url: String, team: String, isFavorite: Bool = false) {
         self.id = "\(playerId)"
         self.player_display_name = player_display_name
         self.position = position
         self.headshot_url = headshot_url
         self.team = team
+        self.isFavorite = isFavorite
+        
     }
     
 }

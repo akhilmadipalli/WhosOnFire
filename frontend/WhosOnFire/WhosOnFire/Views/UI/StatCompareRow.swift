@@ -1,18 +1,5 @@
-//
-//  StatCompareRow.swift
-//  WhosOnFire
-//
-//  Created by lending on 4/19/26.
-//
 import SwiftUI
-import SwiftData
 
-
-/**
- StatCompareRow: View
-
- Compares between two values, the higher value is highlighted.
- */
 struct StatCompareRow: View {
     let label: String
     let valueA: String
@@ -21,23 +8,39 @@ struct StatCompareRow: View {
     let rawA: Double
     let rawB: Double
 
+    private var aWins: Bool { higherIsBetter ? rawA > rawB : rawA < rawB }
+    private var bWins: Bool { higherIsBetter ? rawB > rawA : rawB < rawA }
 
     var body: some View {
         HStack {
-            Text(valueA)
-                .frame(maxWidth: .infinity)
-                .bold(higherIsBetter ? rawA >= rawB : rawA <= rawB)
-                .foregroundStyle(higherIsBetter ? (rawA >= rawB ? .primary : .secondary) : (rawA <= rawB ? .primary : .secondary))
+            // LEFT SIDE: Player A
+            HStack(spacing: 4) {
+                if aWins { Image(systemName: "flame.fill")
+                        .foregroundStyle(.orange)
+                        .font(.caption) }
+                Spacer()
+                Text(valueA)
+                    .bold(aWins)
+                    .foregroundStyle(aWins ? .primary : .secondary)
+            }
+            .frame(maxWidth: .infinity)
             Text(label)
-                .font(.caption)
+                .font(.caption2)
                 .foregroundStyle(.secondary)
-                .frame(width: 80)
-            Text(valueB)
-                .frame(maxWidth: .infinity)
-                .bold(higherIsBetter ? rawB >= rawA : rawB <= rawA)
-                .foregroundStyle(higherIsBetter ? (rawB >= rawA ? .primary : .secondary) : (rawB <= rawA ? .primary : .secondary))
+                .multilineTextAlignment(.center)
+                .frame(width: 85)
+            HStack(spacing: 4) {
+                Text(valueB)
+                    .bold(bWins)
+                    .foregroundStyle(bWins ? .primary : .secondary)
+                Spacer()
+                if bWins { Image(systemName: "flame.fill")
+                        .foregroundStyle(.orange)
+                        .font(.caption) }
+            }
+            .frame(maxWidth: .infinity)
         }
         .padding(.vertical, 4)
+        .padding(.horizontal, 8)
     }
 }
-

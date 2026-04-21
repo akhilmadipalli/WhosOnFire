@@ -1,3 +1,6 @@
+import Accelerate
+import Charts
+import DDSpiderChart
 //
 //  ComparisonModule.swift
 //  WhosOnFire
@@ -6,9 +9,6 @@
 //
 import SwiftData
 import SwiftUI
-import Charts
-import DDSpiderChart
-import Accelerate
 
 struct ComparisonModule: View {
     var statA: PlayerSeasonStatDTO?
@@ -16,18 +16,30 @@ struct ComparisonModule: View {
     var playerA: Player
     var playerB: Player?
     var baseline: PlayerSeasonStatDTO? = nil
+    var standardDev: PlayerSeasonStatDTO? = nil
+    var status: String? = nil
+
     var similarityScore: Double {
         print("Calculating similarity score")
         guard let sA = statA,
-                  let sB = statB,
-                  let base = baseline else {
-                return 0.0
+            let sB = statB,
+            let base = baseline
+        else {
+            return 0.0
         }
-        let v1 = sA.toVector(baseline: base, position: playerA.position)
-        let v2 = sB.toVector(baseline: base, position: playerA.position)
+        let v1 = sA.toZScoreVector(
+            baseline: base,
+            std: standardDev,
+            position: playerA.position
+        )
+        let v2 = sB.toZScoreVector(
+            baseline: base,
+            std: standardDev,
+            position: playerA.position
+        )
         // Check same vec size
         guard v1.count == v2.count else { return 0.0 }
-        
+
         let dotProduct = vDSP.dot(v1, v2)
         let magnitude1 = sqrt(vDSP.sumOfSquares(v1))
         let magnitude2 = sqrt(vDSP.sumOfSquares(v2))
@@ -37,13 +49,13 @@ struct ComparisonModule: View {
         return score
     }
 
-
-    let offensePositions = ["RB","TE","WR","FB"]
+    let offensePositions = ["RB", "TE", "WR", "FB"]
     let defensePositions = ["DE", "DT", "LB", "CB", "S", "DL", "DB"]
-    
+
     var body: some View {
-        
-        SimilarityDonutChart(score: similarityScore)
+        if(status == "Compare") {
+            SimilarityDonutChart(score: similarityScore)
+        }
         if playerA.position == "QB" {
             StatCompareRow(
                 label: "Passing Yards",
@@ -168,7 +180,12 @@ struct ComparisonModule: View {
                 rawB: Double(statB?.def_fumbles_forced ?? 0)
             )
         }
-        RadarModule(statA: statA, statB: statB, position: playerA.position, baseline: baseline)
+        RadarModule(
+            statA: statA,
+            statB: statB,
+            position: playerA.position,
+            baseline: baseline
+        )
     }
 }
 
@@ -177,7 +194,7 @@ struct RadarModule: View {
     var statB: PlayerSeasonStatDTO?
     var position: String
     var baseline: PlayerSeasonStatDTO?
-    let offensePositions = ["RB","TE","WR","FB"]
+    let offensePositions = ["RB", "TE", "WR", "FB"]
     let defensePositions = ["DE", "DT", "LB", "CB", "S", "DL", "DB"]
     var radarAxes: [String] {
         if position == "QB" {
@@ -185,65 +202,137 @@ struct RadarModule: View {
         } else if offensePositions.contains(position) {
             return ["Rush Yds", "Rec Yds", "Rush TD", "Rec TD", "Rec EPA"]
         } else {
-            return ["Sacks", "INT", "FF", "Other","Fantasy"]
+            return ["Sacks", "INT", "FF", "Other", "Fantasy"]
         }
     }
-    var radarValues: [Double] {
+    var radarValues: (playerA: [Double], playerB: [Double]) {
         guard let p = statA,
-              let avg = statB
-        else { return [0,0,0,0,0] }
-        let playerStats: [Double]
-        if (position == "QB") {
-           playerStats = [
-            normalize(value: p.passing_yards, avg: avg.passing_yards),
-            normalize(value: Double(p.passing_tds), avg: Double(avg.passing_tds)),
-            1-normalize(value:Double(p.passing_interceptions), avg:Double(avg.passing_interceptions)),
-            normalize(value: p.rushing_yards, avg: avg.rushing_yards),
-            normalize(value: p.passing_epa, avg: avg.passing_epa)
-           ]
+            let p2 = statB,
+            let avg = baseline
+        else { return ([0, 0, 0, 0, 0], [0, 0, 0, 0, 0]) }
+        let playerAStats: [Double]
+        let playerBStats: [Double]
+        if position == "QB" {
+            playerAStats = [
+                normalize(value: p.passing_yards, avg: avg.passing_yards),
+                normalize(
+                    value: Double(p.passing_tds),
+                    avg: Double(avg.passing_tds)
+                ),
+                1
+                    - normalize(
+                        value: Double(p.passing_interceptions),
+                        avg: Double(avg.passing_interceptions)
+                    ),
+                normalize(value: p.rushing_yards, avg: avg.rushing_yards),
+                normalize(value: p.passing_epa, avg: avg.passing_epa),
+            ]
+            playerBStats = [
+                normalize(value: p2.passing_yards, avg: avg.passing_yards),
+                normalize(
+                    value: Double(p2.passing_tds),
+                    avg: Double(avg.passing_tds)
+                ),
+                1
+                    - normalize(
+                        value: Double(p2.passing_interceptions),
+                        avg: Double(avg.passing_interceptions)
+                    ),
+                normalize(value: p2.rushing_yards, avg: avg.rushing_yards),
+                normalize(value: p2.passing_epa, avg: avg.passing_epa),
+            ]
         } else if offensePositions.contains(position) {
-            playerStats = [
+            playerAStats = [
                 normalize(value: p.rushing_yards, avg: avg.rushing_yards),
                 normalize(value: p.receiving_yards, avg: avg.receiving_yards),
-                normalize(value: Double(p.rushing_tds), avg: Double(avg.rushing_tds)),
-                normalize(value: Double(p.receiving_tds), avg: Double(avg.receiving_tds)),
-                normalize(value: p.receiving_epa, avg: avg.receiving_epa)
+                normalize(
+                    value: Double(p.rushing_tds),
+                    avg: Double(avg.rushing_tds)
+                ),
+                normalize(
+                    value: Double(p.receiving_tds),
+                    avg: Double(avg.receiving_tds)
+                ),
+                normalize(value: p.receiving_epa, avg: avg.receiving_epa),
+            ]
+            playerBStats = [
+                normalize(value: p2.rushing_yards, avg: avg.rushing_yards),
+                normalize(value: p2.receiving_yards, avg: avg.receiving_yards),
+                normalize(
+                    value: Double(p2.rushing_tds),
+                    avg: Double(avg.rushing_tds)
+                ),
+                normalize(
+                    value: Double(p2.receiving_tds),
+                    avg: Double(avg.receiving_tds)
+                ),
+                normalize(value: p2.receiving_epa, avg: avg.receiving_epa),
             ]
         } else {
-            playerStats = [
+            playerAStats = [
                 normalize(value: p.def_sacks, avg: avg.def_sacks),
-                normalize(value: Double(p.def_interceptions), avg: Double(avg.def_interceptions)),
-                normalize(value: Double(p.def_fumbles_forced), avg: Double(avg.def_fumbles_forced)),
+                normalize(
+                    value: Double(p.def_interceptions),
+                    avg: Double(avg.def_interceptions)
+                ),
+                normalize(
+                    value: Double(p.def_fumbles_forced),
+                    avg: Double(avg.def_fumbles_forced)
+                ),
                 0,
-                normalize(value: p.fantasy_points_ppr, avg: avg.fantasy_points_ppr)
+                normalize(
+                    value: p.fantasy_points_ppr,
+                    avg: avg.fantasy_points_ppr
+                ),
+            ]
+            playerBStats = [
+                normalize(value: p2.def_sacks, avg: avg.def_sacks),
+                normalize(
+                    value: Double(p2.def_interceptions),
+                    avg: Double(avg.def_interceptions)
+                ),
+                normalize(
+                    value: Double(p2.def_fumbles_forced),
+                    avg: Double(avg.def_fumbles_forced)
+                ),
+                0,
+                normalize(
+                    value: p2.fantasy_points_ppr,
+                    avg: avg.fantasy_points_ppr
+                ),
             ]
         }
-        print(playerStats)
-        
-        return playerStats
+        print(playerAStats)
+        print(playerBStats)
+        return (playerAStats, playerBStats)
     }
     var body: some View {
+        let computedStats = radarValues
         DDSpiderChart(
             axes: radarAxes,
             values: [
-                DDSpiderChartEntries(
-                    values: Array(repeating: 0.5, count: radarAxes.count).map(Float.init),
-                    color: .orange.opacity(0.3)
-                ),
-                DDSpiderChartEntries(
-                    values: radarValues.map(Float.init),
-                    color: .red.opacity(0.7)
-                )
-            ],
+                        DDSpiderChartEntries(
+                            values: Array(repeating: Float(0.5), count: radarAxes.count),
+                            color: .black.opacity(0.2)
+                        ),
+                        DDSpiderChartEntries(
+                            values: computedStats.playerA.map(Float.init),
+                            color: .red.opacity(0.7)
+                        ),
+                        DDSpiderChartEntries(
+                            values: computedStats.playerB.map(Float.init),
+                            color: .orange.opacity(0.7)
+                        ),
+                    ],
             fontTitle: .boldSystemFont(ofSize: 16),
             textColor: .black
         )
         .frame(width: 300, height: 300)
-        
+
     }
     /**
      Normalizes relative to an average, where 1 is the average
-     
+    
      */
     func normalize(value: Double, avg: Double) -> Double {
         guard avg != 0 else { return 0 }
@@ -256,15 +345,26 @@ struct RadarModule: View {
 struct SimilarityDonutChart: View {
     var score: Double?
     var body: some View {
-        Chart {
-            SectorMark(
-                angle: .value("Similarity", score!),
-                innerRadius: .ratio(0.8),
-                angularInset: 1.5
-            )
-            .cornerRadius(5)
-            .foregroundStyle(Color.orange)
+        ZStack {
+            Chart {
+                SectorMark(
+                    angle: .value("Similarity", score!),
+                    innerRadius: .ratio(0.8),
+                    angularInset: 1.5
+                )
+                .cornerRadius(5)
+                .foregroundStyle(Color.orange)
+            }
+            VStack(spacing: -2) {
+                Text("\(Int((score ?? 0)*100))%")
+                    .font(.system(.title3, design: .rounded))
+                    .bold()
+                Text("Similar")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
         }
+
     }
-    
+
 }
