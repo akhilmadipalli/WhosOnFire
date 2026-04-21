@@ -9,7 +9,7 @@ A mobile app for iOS (iPhone & iPad) built with SwiftUI that allows users to exp
 | Role | Focus |
 |------|-------|
 | Akhil Madipalli (akhimadi) | Frontend - SwiftUI views, navigation, adaptive layouts |
-| Liam Murphy (liamm24)  | Backend - Python/Flask API, NFLverse data pipeline, radar chart |
+| Liam Murphy (liamm24)  | Backend - Python/Flask API, NFLverse data processing, radar chart |
 
 ---
 
@@ -26,7 +26,7 @@ WhosOnFire uses a two-part architecture:
 
 ### Backend
 - Python 3.8+
-- pip packages: `flask`, `nflverse` (see below)
+- pip packages: `flask`, `nflverse`, `pandas`
 
 ### iOS App
 - Xcode 15+
@@ -38,14 +38,17 @@ WhosOnFire uses a two-part architecture:
 ## Setup Instructions
 
 ### Step 1 - Install Python Dependencies
-
+In your root folder
+```
+cd backend
+```
 ```bash
 pip install flask nflverse pandas
 ```
 
 ### Step 2 - Start the Backend Server
 
-In a terminal, navigate to the project folder and run:
+In a terminal, remain on ./backend and run
 
 ```bash
 python app.py
@@ -98,16 +101,23 @@ private let player_stat_url_str = "http://192.168.1.42/player_stats"
 
 - **Search & Filter Players** - Find NFL players by name, team, or position
 - **Player Profiles** - View detailed stats for any player
-- **Favorites** - Bookmark players for quick access
-- **Player Comparison** - Compare two players side-by-side
-- **Radar Chart** - Visualize a player's stats relative to another player or the positional average
+- **Favorites** - Bookmark players for persistant, quick access.
+- **Player to Player Comparison** - Compare two players side-by-side
+- **Player to Position Average** - Compare a player to the average of its position and season
+- **Radar Chart** - Visualize a player's stats relative to another player or the positional average\
+- **Simularity Score** - Find players with similar playstyles. Ultilizes z-score cosine similarity to output a score between 0 and 100. 
 
 ---
 
 ## Known Issues
 
-- **Manual IP configuration required** - `API.swift` must be updated with the host machine's local IP address before the app will function. There is no automatic service discovery.
-- **Backend must be running locally** - The Flask server (`app.py`) must be started in a separate terminal before launching the app. There is no persistent hosted backend.
+- **Manual IP configuration required** - `API.swift` must be updated with the host machine's local IP address before the app will function. There is no persistent hosting service. 
+- **Backend must be running locally** - The Flask server (`app.py`) must be started in a separate terminal before launching the app.
+  Planned Solution: Use Firebase to host both the frontend and the backend
+  
+- **Long Loading Time** - Currently, we fetch all player data and calculate statistics, when the app loads. This is generally inefficient, as NFL data is usually updated daily/weekly. 
+- We calculate all stat averages for every season and position combination. This is an O(n^2) operation, which can vary in loading times.
+  Planned Solution: Use a firebase cloud function to update data daily, this can run when the user is not running the app. 
 
 ---
 
