@@ -56,7 +56,7 @@ You should see output like:
 * Running on http://0.0.0.0:5000
 ```
 
-> ⚠️ **Keep this terminal open.** The iOS app will not load any data if the Flask server is not running.
+> Note: **Keep this terminal open.** The iOS app will not load any data if the Flask server is not running.
 
 ### Step 3 — Find Your Local IP Address
 
@@ -90,7 +90,7 @@ private let player_stat_url_str = "http://192.168.1.42/player_stats"
 2. Select your target simulator or device.
 3. Press **⌘R** to build and run.
 
-> ⚠️ If running on a **physical device**, both your iPhone/iPad and your Mac must be connected to the **same Wi-Fi network**.
+> Note: If running on a **physical device**, both your iPhone/iPad and your Mac must be connected to the **same Wi-Fi network**.
 
 ---
 
