@@ -23,11 +23,11 @@ struct UserProfileView: View {
                 HStack(spacing: 16) {
                     ZStack {
                         Circle()
-                            .fill(Color.blue.opacity(0.2))
+                            .fill(Color.orange.opacity(0.2))
                             .frame(width: 60, height: 60)
                         Text(initials)
                             .font(.title2).bold()
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(.orange)
                     }
                     VStack(alignment: .leading, spacing: 4) {
                         Text(appState.currentUser?.email ?? "—")

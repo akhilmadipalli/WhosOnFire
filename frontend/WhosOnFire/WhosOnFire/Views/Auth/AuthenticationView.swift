@@ -36,18 +36,18 @@ struct AuthenticationView: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 55)
-                            .background(Color.blue)
+                            .background(Color.orange)
                             .cornerRadius(12)
-                            .shadow(color: Color.blue.opacity(0.3), radius: 10, x: 0, y: 5)
+                            .shadow(color: Color.orange.opacity(0.3), radius: 10, x: 0, y: 5)
                     }
 
                     NavigationLink(destination: SignUpView()) {
                         Text("Create Account")
                             .font(.headline)
-                            .foregroundColor(.blue)
+                            .foregroundColor(.orange)
                             .frame(maxWidth: .infinity)
                             .frame(height: 55)
-                            .background(Color.blue.opacity(0.1))
+                            .background(Color.orange.opacity(0.1))
                             .cornerRadius(12)
                     }
                 }
