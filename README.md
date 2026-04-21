@@ -58,14 +58,14 @@ You should see output like:
 
 > Note: **Keep this terminal open.** The iOS app will not load any data if the Flask server is not running.
 
-### Step 3 — Find Your Local IP Address
+### Step 3 - Find Your Local IP Address
 
 The iOS app needs to point to your machine's local IP address.
 
 - **macOS:** Go to System Settings → Network, or run `ipconfig getifaddr en0` in Terminal.
 - Your IP will look something like `192.168.1.42`
 
-### Step 4 — Update the API Base URL
+### Step 4 - Update the API Base URL
 
 Open the Xcode project and navigate to:
 
