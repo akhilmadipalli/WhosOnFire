@@ -228,7 +228,7 @@ struct RadarModule: View {
             values: [
                 DDSpiderChartEntries(
                     values: Array(repeating: 0.5, count: radarAxes.count).map(Float.init),
-                    color: .black.opacity(0.3)
+                    color: .orange.opacity(0.3)
                 ),
                 DDSpiderChartEntries(
                     values: radarValues.map(Float.init),
@@ -263,7 +263,7 @@ struct SimilarityDonutChart: View {
                 angularInset: 1.5
             )
             .cornerRadius(5)
-            .foregroundStyle(by: .value("Type", "Match"))
+            .foregroundStyle(Color.orange)
         }
     }
     

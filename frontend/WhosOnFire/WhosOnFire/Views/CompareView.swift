@@ -72,12 +72,10 @@ struct CompareView: View {
                 
                 // Comparison rows
                 if playerA != nil && playerB != nil {
-                    Text("Two players here")
-                    
                     ComparisonModule(statA: playerAStats, statB: playerBStats, playerA: playerA!,
                                      baseline: averageStat)
                     .padding(.horizontal)
-                    
+
                 } else {
                     Text("Select two players to compare")
                         .foregroundStyle(.secondary)
@@ -142,8 +140,8 @@ struct PlayerPicker: View {
                     )
                 } else {
                     Image(systemName: "plus.circle").font(.title2)
-                        .foregroundStyle(.blue)
-                    Text(label).font(.caption).foregroundStyle(.blue)
+                        .foregroundStyle(.orange)
+                    Text(label).font(.caption).foregroundStyle(.orange)
                 }
             }
             .frame(maxWidth: .infinity)
