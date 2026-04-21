@@ -16,10 +16,9 @@ struct CompareView: View {
     @State var playerAStats: PlayerSeasonStatDTO?
     @State var playerBStats: PlayerSeasonStatDTO?
     @EnvironmentObject var appState: AppState
-
-    // Metrics per year-position
+    
     @State var averageStat: PlayerSeasonStatDTO?
-    @State var stdStat: PlayerSeasonStatDTO?
+
 
     func updatePlayerStats(playerA: Player, playerB: Player) {
         self.playerAStats =
@@ -37,26 +36,18 @@ struct CompareView: View {
         print(
             "Stats loaded for \(playerA.player_display_name) and \(playerB.player_display_name)"
         )
-        self.averageStat =
-            appState.positionAverages["\(playerA.position)_\(selectedSeason)"]
+        self.averageStat = appState.positionAverages[   "\(playerA.position)_\(selectedSeason)"]
         print("Baseline calculated for \(playerA.position)_\(selectedSeason)")
-        self.stdStat =
-            appState.positionStds["\(playerA.position)_\(selectedSeason)"]
-        print(
-            "Standard Dev calculated for \(playerA.position)_\(selectedSeason)"
-        )
-
+        
     }
+    
 
     var body: some View {
         ScrollView {
             Picker("Season", selection: $selectedSeason) {
                 Text("All").tag("All")
 
-                ForEach(
-                    Array(Set(stats.map { $0.season })).sorted(),
-                    id: \.self
-                ) { year in
+                ForEach(Array(Set(stats.map { $0.season })).sorted(), id: \.self) { year in
                     Text(String(year)).tag(String(year))
                 }
             }.padding()
@@ -68,7 +59,7 @@ struct CompareView: View {
                         selected: $playerA,
                         players: allPlayers,
                         positionFilter: nil
-
+                        
                     )
                     PlayerPicker(
                         label: "Player 2",
@@ -78,18 +69,11 @@ struct CompareView: View {
                     )
                 }
                 .padding(.horizontal)
-
+                
                 // Comparison rows
                 if playerA != nil && playerB != nil {
-                    Text("Two players here")
-
-                    ComparisonModule(
-                        statA: playerAStats,
-                        statB: playerBStats,
-                        playerA: playerA!,
-                        baseline: averageStat,
-                        std: stdStat
-                    )
+                    ComparisonModule(statA: playerAStats, statB: playerBStats, playerA: playerA!,
+                                     baseline: averageStat)
                     .padding(.horizontal)
 
                 } else {
@@ -132,8 +116,8 @@ struct PlayerPicker: View {
     // Search box
     var filteredPlayers: [Player] {
         var list = players
-        if positionFilter != nil {
-            list = list.filter { $0.position == positionFilter! }
+        if (positionFilter != nil) {
+            list = list.filter {$0.position == positionFilter! }
         }
         if searchText.isEmpty { return list }
         return list.filter {
@@ -156,8 +140,8 @@ struct PlayerPicker: View {
                     )
                 } else {
                     Image(systemName: "plus.circle").font(.title2)
-                        .foregroundStyle(.blue)
-                    Text(label).font(.caption).foregroundStyle(.blue)
+                        .foregroundStyle(.orange)
+                    Text(label).font(.caption).foregroundStyle(.orange)
                 }
             }
             .frame(maxWidth: .infinity)

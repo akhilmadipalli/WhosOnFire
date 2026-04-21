@@ -14,7 +14,7 @@ struct MainTabView: View {
                 SearchView()
             }
             .tabItem {
-                Label("Search", systemImage: "magnifyingglass")
+                Label("Search", systemImage: "flame.fill")
             }
             NavigationStack {
                 CompareView()

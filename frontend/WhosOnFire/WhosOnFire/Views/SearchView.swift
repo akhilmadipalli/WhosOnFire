@@ -18,7 +18,7 @@ struct SearchView: View {
                 PlayerRowView(player: player)
             }
         }
-        .searchable(text: $searchText, prompt: "Search players")
+        .searchable(text: $searchText, prompt: "Who's on fire?")
         .navigationTitle("Search")
     }
 }

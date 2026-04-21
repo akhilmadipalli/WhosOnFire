@@ -40,6 +40,7 @@ struct WhosOnFireApp: App {
             RootView()
                 .environmentObject(appState)
                 .modelContainer(sharedModelContainer)
+                .preferredColorScheme(appState.preferredColorScheme)
         }
     }
 }
