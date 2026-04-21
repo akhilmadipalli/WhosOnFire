@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import Accelerate
 /**
  After we have the raw unfiltered data from SwiftData
  Season: "Year" or "All"
@@ -88,6 +89,38 @@ class StatEngine {
                 rushing_epa: totalRushEPA / count,
                 receiving_epa: totalRecEPA / count
             )
+    }
+    
+    static func getStdByPosition(position:String, allPlayers: [Player], allStats: [PlayerSeasonStat]) ->
+    PlayerSeasonStatDTO? {
+        let playerIDsInPosition = Set(allPlayers.filter { $0.position == position }.map { $0.id })
+        let positionStats = allStats.filter { playerIDsInPosition.contains($0.player_id) }
+        guard !positionStats.isEmpty else { return nil }
+        let count = Double(positionStats.count)
+        
+        func calculateStd(_ values: [Double]) -> Double {
+                return vDSP.standardDeviation(values)
+            }
+
+            return PlayerSeasonStatDTO(
+                player_id: "STD_\(position)",
+                season: 0,
+                passing_yards: calculateStd(positionStats.map { $0.passing_yards }),
+                passing_tds: Int(calculateStd(positionStats.map { Double($0.passing_tds) })),
+                passing_interceptions: Int(calculateStd(positionStats.map { Double($0.passing_interceptions) })),
+                rushing_yards: calculateStd(positionStats.map { $0.rushing_yards }),
+                rushing_tds: Int(calculateStd(positionStats.map { Double($0.rushing_tds) })),
+                receiving_yards: calculateStd(positionStats.map { $0.receiving_yards }),
+                receiving_tds: Int(calculateStd(positionStats.map { Double($0.receiving_tds) })),
+                def_sacks: calculateStd(positionStats.map { $0.def_sacks }),
+                def_interceptions: Int(calculateStd(positionStats.map { Double($0.def_interceptions) })),
+                def_fumbles_forced: Int(calculateStd(positionStats.map { Double($0.def_fumbles_forced) })),
+                fantasy_points_ppr: calculateStd(positionStats.map { $0.fantasy_points_ppr }),
+                passing_epa: calculateStd(positionStats.map { $0.passing_epa }),
+                rushing_epa: calculateStd(positionStats.map { $0.rushing_epa }),
+                receiving_epa: calculateStd(positionStats.map { $0.receiving_epa })
+            )
+        
     }
     
 }

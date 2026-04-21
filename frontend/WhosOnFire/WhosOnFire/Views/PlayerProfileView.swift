@@ -14,7 +14,6 @@ struct PlayerProfileView: View {
 
     @Query var stats: [PlayerSeasonStat]
     @State private var selectedSeason: String = "All"
-    @State private var positionAverage: PlayerSeasonStatDTO?
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var appState: AppState
 
@@ -25,6 +24,9 @@ struct PlayerProfileView: View {
     }
     var averageStat: PlayerSeasonStatDTO? {
         appState.positionAverages[                "\(player.position)_\(selectedSeason)"]
+    }
+    var standardDevStat: PlayerSeasonStatDTO? {
+        appState.positionStds[                "\(player.position)_\(selectedSeason)"]
     }
     
     init(player: Player) {
@@ -69,7 +71,7 @@ struct PlayerProfileView: View {
                 .padding(.top)
 
                 // Stats grid
-                ComparisonModule(statA: filteredStat, statB: averageStat, playerA: player, baseline: averageStat)
+                ComparisonModule(statA: filteredStat, statB: averageStat, playerA: player, baseline: averageStat, std: standardDevStat)
                 .padding(.horizontal)
             }
         }

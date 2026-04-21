@@ -24,7 +24,7 @@ struct RootView: View {
             let container = modelContext.container
             Task.detached(priority: .high) {
                 let backgroundContext = ModelContext(container)
-                let seasons = [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+                let seasons = [2021, 2022, 2023, 2024, 2025]
                 let positions = ["QB", "RB", "WR", "TE", "FB", "DE", "DT", "CB", "S", "LB", "DB", "DL"]
                 
                 print("Calling api from RootView...")
@@ -33,12 +33,13 @@ struct RootView: View {
                 await api.fetchPlayerStats(seasons: seasons, modelContext: backgroundContext)
                 try backgroundContext.save()
                 
-                print("Calculating position averages...")
+                print("Calculating position averages and standard devs...")
                 
                 let allPlayers = (try? backgroundContext.fetch(FetchDescriptor<Player>())) ?? []
                 let allStats = (try? backgroundContext.fetch(FetchDescriptor<PlayerSeasonStat>())) ?? []
                 
                 var tempAverages: [String: PlayerSeasonStatDTO] = [:]
+                var tempStandardDevs: [String: PlayerSeasonStatDTO] = [:]
                 let seasonList = seasons.map { String($0) } + ["All"]
                 
                 for season in seasonList {
@@ -50,12 +51,18 @@ struct RootView: View {
                         if let avg = await StatEngine.getAverageByPosition(position: pos, allPlayers: allPlayers, allStats: filteredStats) {
                             tempAverages[key] = avg
                         }
+                        if let std = await StatEngine.getStdByPosition(position: pos, allPlayers: allPlayers, allStats: filteredStats) {
+                            tempStandardDevs[key] = std
+                        }
                     }
                 }
-                let results = tempAverages
+                let posMeans = tempAverages
+                let posStds = tempAverages
+
                 await MainActor.run {
-                    appState.positionAverages = results
-                    print("UI Updated with \(results.count) averages.")
+                    appState.positionAverages = posMeans
+                    appState.positionStds = posStds
+                    print("UI Updated with \(posMeans.count) averages and \(posStds.count) stds.")
                 }
             }
         }

@@ -13,6 +13,7 @@ class AppState: ObservableObject {
     @Published var currentUser: User? = nil
     
     @Published var positionAverages: [String: PlayerSeasonStatDTO] = [:]
+    @Published var positionStds: [String: PlayerSeasonStatDTO] = [:]
 
     func signIn(user: User) {
         currentUser = user
