@@ -42,7 +42,7 @@ WhosOnFire uses a two-part architecture:
 Then, press Command R to run the project
 
 
-### Step 5 - Run the App
+### Step 1 - Run the App
 
 1. Open `WhosOnFire.xcodeproj` in Xcode.
 2. Select your target simulator or device.
