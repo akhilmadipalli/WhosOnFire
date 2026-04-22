@@ -21,6 +21,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				WhosOnFire/Info.plist,
 			);
 			target = 25EB6C522F9836F400C6DF23 /* WOF2 */;
 		};
@@ -74,6 +75,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 25EB6C5E2F9836F500C6DF23 /* Build configuration list for PBXNativeTarget "WOF2" */;
 			buildPhases = (
+				99F707FF2F98516D00F3F479 /* ShellScript */,
 				25EB6C4F2F9836F400C6DF23 /* Sources */,
 				25EB6C502F9836F400C6DF23 /* Frameworks */,
 				25EB6C512F9836F400C6DF23 /* Resources */,
@@ -142,6 +144,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		99F707FF2F98516D00F3F479 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/bash\n\nset -x\necho \"Running sh\"\n\nIP=$(ipconfig getifaddr en0)\n\necho \"Writing IP: ${IP} to Config.swift\"\n\nlsof -ti:5001 | xargs kill -9 2>/dev/null || true\n\n/usr/bin/python3 -m pip install -r \"${SRCROOT}/WOF2/WhosOnFire/backend/requirements.txt\" --quiet\n\n/usr/bin/python3 \"${SRCROOT}/WOF2/WhosOnFire/backend/app.py\" &\n\nexit 0\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		25EB6C4F2F9836F400C6DF23 /* Sources */ = {
