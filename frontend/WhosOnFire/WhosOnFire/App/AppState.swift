@@ -17,6 +17,8 @@ class AppState: ObservableObject {
     
     @Published var isLoading: Bool = false
     @Published var loadingStatus: String = ""
+    
+    @Published var IP: String? = nil
 
     @AppStorage("colorSchemePreference") var colorSchemePreference: String = "system"
 

@@ -8,9 +8,8 @@ import Foundation
 import SwiftData
 @MainActor
 class API {
-    private let IP = "10.79.103.179"
-    private let player_url_str = "http://10.79.103.179/players"
-    private let player_stat_url_str = "http://10.79.103.179/player_stats"
+    private let player_url_str = "\(Config.baseURL)/players"
+    private let player_stat_url_str = "\(Config.baseURL)/player_stats"
     private let allowedPositions =  ["QB", "RB", "WR", "TE", "FB", "DE", "DT", "CB", "S", "LB", "DB", "DL"]
     
     struct PlayerStatsRequest: Encodable {

@@ -47,8 +47,6 @@ def load_player_stats(season):
     player_stats = player_stats.reset_index()
     player_stats['player_id'] = player_stats['player_id'].astype(str)
     
-    print(player_stats['team'])
-
                            
     print(f"Season agg: {len(player_stats)}")
     unique_players = player_stats["player_id"].nunique()
@@ -69,8 +67,6 @@ def load_player_info():
     all_players.rename(columns={'display_name':'player_display_name'}, inplace=True)
     all_players.rename(columns={'headshot':'headshot_url'}, inplace=True)
     all_players.rename(columns={'latest_team':'team'}, inplace=True)
-    print(all_players.columns)
-    print(all_players["teams"])
 
 # Only keep players who are in stats_df OR season
     active_players = all_players[all_players['player_id'].isin(stats_df['player_id'].unique())]
